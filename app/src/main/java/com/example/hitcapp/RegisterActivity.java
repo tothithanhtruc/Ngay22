@@ -3,6 +3,9 @@ package com.example.hitcapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -17,19 +20,48 @@ public class RegisterActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_register);
 
-        // Padding cho edge-to-edge
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+        android.view.View mainView = findViewById(R.id.main);
+        if (mainView != null) {
+            ViewCompat.setOnApplyWindowInsetsListener(mainView, (v, insets) -> {
+                Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+                v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+                return insets;
+            });
+        }
 
-        // Nút Sign Up trong RegisterActivity
+        // Ánh xạ View
+        EditText etEmail = findViewById(R.id.etEmail);
+        EditText etUsername = findViewById(R.id.etUsername);
+        EditText etPassword = findViewById(R.id.etPassword);
+        EditText etConfirmPassword = findViewById(R.id.etConfirmPassword);
         Button btnSignUp = findViewById(R.id.btnSignUp);
-        btnSignUp.setOnClickListener(v -> {
-            Intent it = new Intent(RegisterActivity.this, HomeActivity.class);
-            startActivity(it);
-            finish(); // đóng RegisterActivity
-        });
+        TextView btnLogin = findViewById(R.id.btnLogin);
+
+        // Xử lý khi nhấn Đăng ký
+        if (btnSignUp != null) {
+            btnSignUp.setOnClickListener(v -> {
+                String email = etEmail.getText().toString().trim();
+                String user = etUsername.getText().toString().trim();
+                String pass = etPassword.getText().toString().trim();
+                String confirm = etConfirmPassword.getText().toString().trim();
+
+                // 🟢 Kiểm tra xem đã nhập đủ thông tin chưa
+                if (email.isEmpty() || user.isEmpty() || pass.isEmpty() || confirm.isEmpty()) {
+                    Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin để đăng ký!", Toast.LENGTH_SHORT).show();
+                } else if (!pass.equals(confirm)) {
+                    Toast.makeText(this, "Mật khẩu xác nhận không khớp!", Toast.LENGTH_SHORT).show();
+                } else {
+                    // Nếu đã nhập đủ
+                    Toast.makeText(this, "Đăng ký thành công!", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(RegisterActivity.this, HomeActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+            });
+        }
+
+        if (btnLogin != null) {
+            btnLogin.setOnClickListener(v -> finish());
+        }
     }
 }
