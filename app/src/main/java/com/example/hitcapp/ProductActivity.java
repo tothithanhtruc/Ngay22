@@ -4,44 +4,26 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
+import androidx.cardview.widget.CardView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
-public class HomeActivity extends AppCompatActivity {
+public class ProductActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_home);
+        setContentView(R.layout.activity_product);
 
-        // Logout
-        Button btnLogout = findViewById(R.id.btnLogout);
-        if (btnLogout != null) {
-            btnLogout.setOnClickListener(new View.OnClickListener() {
+        // Link to Detail for Product 1
+        CardView cardProduct1 = findViewById(R.id.cardProduct1);
+        if (cardProduct1 != null) {
+            cardProduct1.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(HomeActivity.this, MainActivity.class);
-                    startActivity(intent);
-                    finish();
-                }
-            });
-        }
-
-        // 💬 Message
-        ImageView btnMessage = findViewById(R.id.btnMessage);
-        if (btnMessage != null) {
-            btnMessage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(HomeActivity.this, MessageActivity.class);
+                    Intent intent = new Intent(ProductActivity.this, ProductDetailActivity.class);
                     startActivity(intent);
                 }
             });
@@ -49,17 +31,17 @@ public class HomeActivity extends AppCompatActivity {
 
         // Bottom Navigation
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setSelectedItemId(R.id.navigation_home);
+        bottomNavigationView.setSelectedItemId(R.id.navigation_product);
 
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id = item.getItemId();
                 if (id == R.id.navigation_home) {
+                    startActivity(new Intent(getApplicationContext(), HomeActivity.class));
+                    overridePendingTransition(0, 0);
                     return true;
                 } else if (id == R.id.navigation_product) {
-                    startActivity(new Intent(getApplicationContext(), ProductActivity.class));
-                    overridePendingTransition(0, 0);
                     return true;
                 } else if (id == R.id.navigation_notifications) {
                     startActivity(new Intent(getApplicationContext(), NotificationActivity.class));
