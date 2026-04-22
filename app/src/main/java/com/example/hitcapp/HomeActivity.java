@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
@@ -22,38 +23,63 @@ public class HomeActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_home);
 
-        // Logout
+        // Nút Đăng xuất
         Button btnLogout = findViewById(R.id.btnLogout);
         if (btnLogout != null) {
-            btnLogout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(HomeActivity.this, MainActivity.class);
-                    startActivity(intent);
-                    finish();
-                }
+            btnLogout.setOnClickListener(v -> {
+                Intent intent = new Intent(HomeActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish();
             });
         }
 
-        // 💬 Message
+        // 🛒 Nút Giỏ hàng (Mở CartActivity)
+        ImageView btnCart = findViewById(R.id.btnCart);
+        if (btnCart != null) {
+            btnCart.setOnClickListener(v -> {
+                Intent intent = new Intent(HomeActivity.this, CartActivity.class);
+                startActivity(intent);
+            });
+        }
+
+        // 💬 Nút Tin nhắn
         ImageView btnMessage = findViewById(R.id.btnMessage);
         if (btnMessage != null) {
-            btnMessage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(HomeActivity.this, MessageActivity.class);
-                    startActivity(intent);
-                }
+            btnMessage.setOnClickListener(v -> {
+                Intent intent = new Intent(HomeActivity.this, MessageActivity.class);
+                startActivity(intent);
             });
         }
 
-        // Bottom Navigation
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setSelectedItemId(R.id.navigation_home);
+        // 🌸 Sản phẩm 1 (Hoa Hồng)
+        CardView cvProduct1 = findViewById(R.id.cvProduct1);
+        if (cvProduct1 != null) {
+            cvProduct1.setOnClickListener(v -> {
+                Intent intent = new Intent(HomeActivity.this, ProductDetailActivity.class);
+                intent.putExtra("productName", "Hoa Hồng");
+                intent.putExtra("productPrice", "199.000đ");
+                intent.putExtra("productImage", R.drawable.hinh);
+                startActivity(intent);
+            });
+        }
 
-        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        // 🌸 Sản phẩm 2 (Hoa Tuylip)
+        CardView cvProduct2 = findViewById(R.id.cvProduct2);
+        if (cvProduct2 != null) {
+            cvProduct2.setOnClickListener(v -> {
+                Intent intent = new Intent(HomeActivity.this, ProductDetailActivity.class);
+                intent.putExtra("productName", "Hoa Tuylip");
+                intent.putExtra("productPrice", "250.000đ");
+                intent.putExtra("productImage", R.drawable.hinh2);
+                startActivity(intent);
+            });
+        }
+
+        // Thanh điều hướng bên dưới (Bottom Navigation)
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        if (bottomNavigationView != null) {
+            bottomNavigationView.setSelectedItemId(R.id.navigation_home);
+            bottomNavigationView.setOnItemSelectedListener(item -> {
                 int id = item.getItemId();
                 if (id == R.id.navigation_home) {
                     return true;
@@ -71,7 +97,7 @@ public class HomeActivity extends AppCompatActivity {
                     return true;
                 }
                 return false;
-            }
-        });
+            });
+        }
     }
 }

@@ -44,14 +44,14 @@
             android:paddingStart="15dp"
             android:paddingEnd="15dp"/>
 
-<!--        <ImageView-->
-<!--            android:id="@+id/btnCart"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:layout_marginStart="10dp"-->
-<!--            android:padding="6dp"-->
-<!--            android:src="@drawable/ic_shopping_cart"-->
-<!--            app:tint="#FF4400" />-->
+        <ImageView
+            android:id="@+id/btnCart"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginStart="10dp"
+            android:padding="6dp"
+            android:src="@drawable/shopping_cart"
+            app:tint="#FF4400" />
 
 
         <ImageView
@@ -128,12 +128,16 @@
         android:paddingHorizontal="15dp">
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/cvProduct1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_margin="5dp"
             app:cardCornerRadius="15dp"
-            app:cardElevation="4dp">
+            app:cardElevation="4dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -152,12 +156,16 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/cvProduct2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_margin="5dp"
             app:cardCornerRadius="15dp"
-            app:cardElevation="4dp">
+            app:cardElevation="4dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

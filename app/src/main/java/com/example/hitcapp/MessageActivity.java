@@ -1,24 +1,130 @@
 package com.example.hitcapp;
 
+import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.activity.EdgeToEdge;
+import android.view.MenuItem;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MessageActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_message);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+
+        // RecyclerView setup
+        RecyclerView rcvMessages = findViewById(R.id.rcvMessages);
+        if (rcvMessages != null) {
+            List<MessageItem> messageList = new ArrayList<>();
+            messageList.add(new MessageItem("Flower Garden Shop", "Chào bạn, đơn hàng của bạn đã được gửi đi!", "10:30", R.drawable.hinh));
+            messageList.add(new MessageItem("Tiệm Hoa Tươi", "Hoa hồng đỏ hiện đang có sẵn bạn nhé.", "09:15", R.drawable.hinh2));
+            messageList.add(new MessageItem("Shop Hoa Đà Lạt", "Cảm ơn bạn đã ủng hộ shop!", "Hôm qua", R.drawable.hinh3));
+
+            MessageAdapter adapter = new MessageAdapter(messageList);
+            rcvMessages.setLayoutManager(new LinearLayoutManager(this));
+            rcvMessages.setAdapter(adapter);
+        }
+
+        // Bottom Navigation
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        if (bottomNavigationView != null) {
+            // Do "Tin nhắn" đã bị xóa khỏi menu điều hướng, chúng ta không set selected item nữa.
+            bottomNavigationView.getMenu().setGroupCheckable(0, false, true); // Bỏ chọn tất cả các mục
+            
+            bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+                @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                    int id = item.getItemId();
+                    if (id == R.id.navigation_home) {
+                        startActivity(new Intent(getApplicationContext(), HomeActivity.class));
+                        overridePendingTransition(0, 0);
+                        finish();
+                        return true;
+                    } else if (id == R.id.navigation_product) {
+                        startActivity(new Intent(getApplicationContext(), ProductActivity.class));
+                        overridePendingTransition(0, 0);
+                        finish();
+                        return true;
+                    } else if (id == R.id.navigation_notifications) {
+                        startActivity(new Intent(getApplicationContext(), NotificationActivity.class));
+                        overridePendingTransition(0, 0);
+                        finish();
+                        return true;
+                    } else if (id == R.id.navigation_profile) {
+                        startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
+                        overridePendingTransition(0, 0);
+                        finish();
+                        return true;
+                    }
+                    return false;
+                }
+            });
+        }
+    }
+}
+
+class MessageItem {
+    private String shopName;
+    private String lastMessage;
+    private String time;
+    private int imageRes;
+
+    public MessageItem(String shopName, String lastMessage, String time, int imageRes) {
+        this.shopName = shopName;
+        this.lastMessage = lastMessage;
+        this.time = time;
+        this.imageRes = imageRes;
+    }
+
+    public String getShopName() { return shopName; }
+    public String getLastMessage() { return lastMessage; }
+    public String getTime() { return time; }
+    public int getImageRes() { return imageRes; }
+}
+
+class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
+    private List<MessageItem> messageList;
+
+    public MessageAdapter(List<MessageItem> messageList) {
+        this.messageList = messageList;
+    }
+
+    @NonNull
+    @Override
+    public MessageViewHolder onCreateViewHolder(@NonNull android.view.ViewGroup parent, int viewType) {
+        android.view.View view = android.view.LayoutInflater.from(parent.getContext()).inflate(R.layout.item_message, parent, false);
+        return new MessageViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull MessageViewHolder holder, int position) {
+        MessageItem item = messageList.get(position);
+        holder.tvShopName.setText(item.getShopName());
+        holder.tvLastMessage.setText(item.getLastMessage());
+        holder.tvTime.setText(item.getTime());
+        holder.imgShopLogo.setImageResource(item.getImageRes());
+    }
+
+    @Override
+    public int getItemCount() { return messageList.size(); }
+
+    static class MessageViewHolder extends RecyclerView.ViewHolder {
+        android.widget.ImageView imgShopLogo;
+        android.widget.TextView tvShopName, tvLastMessage, tvTime;
+
+        public MessageViewHolder(@NonNull android.view.View itemView) {
+            super(itemView);
+            imgShopLogo = itemView.findViewById(R.id.imgShopLogo);
+            tvShopName = itemView.findViewById(R.id.tvShopName);
+            tvLastMessage = itemView.findViewById(R.id.tvLastMessage);
+            tvTime = itemView.findViewById(R.id.tvTime);
+        }
     }
 }
