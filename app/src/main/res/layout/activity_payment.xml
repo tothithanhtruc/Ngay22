@@ -57,25 +57,88 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Địa chỉ nhận hàng"
-                        android:textColor="#FF5F00"
-                        android:textStyle="bold" />
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Địa chỉ nhận hàng"
+                            android:textColor="#FF5F00"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/btnChangeAddress"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:text="Thay đổi"
+                            android:textColor="#2196F3"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:clickable="true"
+                            android:focusable="true"/>
+                    </RelativeLayout>
 
                     <TextView
+                        android:id="@+id/tvRecipientInfo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:text="Nguyễn Văn A | 0123456789"
-                        android:textColor="#000000" />
+                        android:textColor="#000000"
+                        android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/tvAddressDetail"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="123 Đường ABC, Quận 1, TP. Hồ Chí Minh"
                         android:textColor="#666666" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#EEEEEE"
+                        android:layout_marginVertical="12dp"/>
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/swDefaultAddress"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Đặt làm địa chỉ mặc định"
+                        android:textSize="14sp"
+                        android:textColor="#444444"
+                        app:thumbTint="#FF5F00"
+                        app:trackTint="#FFCCBC" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Danh sách sản phẩm -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:id="@+id/lnItemsContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Sản phẩm"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="10dp"/>
+
+                    <!-- Các item sẽ được add vào đây bằng code -->
+
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
@@ -149,10 +212,11 @@
                             android:text="Tổng tiền hàng" />
 
                         <TextView
+                            android:id="@+id/tvSubtotal"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentEnd="true"
-                            android:text="449.000đ" />
+                            android:text="0đ" />
                     </RelativeLayout>
 
                     <RelativeLayout
@@ -190,10 +254,11 @@
                             android:textStyle="bold" />
 
                         <TextView
+                            android:id="@+id/tvTotalFinal"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentEnd="true"
-                            android:text="479.000đ"
+                            android:text="30.000đ"
                             android:textColor="#EE4D2D"
                             android:textSize="18sp"
                             android:textStyle="bold" />
@@ -228,9 +293,10 @@
                 android:textSize="12sp" />
 
             <TextView
+                android:id="@+id/tvBottomTotal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="479.000đ"
+                android:text="30.000đ"
                 android:textColor="#EE4D2D"
                 android:textSize="16sp"
                 android:textStyle="bold" />

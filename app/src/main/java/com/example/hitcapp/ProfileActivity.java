@@ -2,16 +2,13 @@ package com.example.hitcapp;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.MenuItem;
-import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -19,6 +16,33 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+
+        // 🛒 Nút Giỏ hàng trong trang Profile
+        ImageView btnCart = findViewById(R.id.btnCartProfile);
+        if (btnCart != null) {
+            btnCart.setOnClickListener(v -> {
+                Intent intent = new Intent(ProfileActivity.this, CartActivity.class);
+                startActivity(intent);
+            });
+        }
+
+        // ⚙️ Nút Cài đặt
+        LinearLayout btnSettings = findViewById(R.id.btnSettings);
+        if (btnSettings != null) {
+            btnSettings.setOnClickListener(v -> {
+                Intent intent = new Intent(ProfileActivity.this, SettingsActivity.class);
+                startActivity(intent);
+            });
+        }
+
+        // 📦 Nút Đơn hàng của tôi
+        LinearLayout btnOrders = findViewById(R.id.btnOrders);
+        if (btnOrders != null) {
+            btnOrders.setOnClickListener(v -> {
+                Intent intent = new Intent(ProfileActivity.this, MyOrdersActivity.class);
+                startActivity(intent);
+            });
+        }
 
         // Nút Đăng xuất trong trang Profile
         LinearLayout btnLogout = findViewById(R.id.btnLogoutProfile);

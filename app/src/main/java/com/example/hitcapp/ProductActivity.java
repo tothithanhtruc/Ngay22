@@ -2,14 +2,11 @@ package com.example.hitcapp;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.MenuItem;
-import android.view.View;
 import android.widget.ImageView;
-import androidx.annotation.NonNull;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
 
 public class ProductActivity extends AppCompatActivity {
 
@@ -64,9 +61,16 @@ public class ProductActivity extends AppCompatActivity {
             });
         }
 
-        ImageView btnGoToCart = findViewById(cartBtnId);
-        if (btnGoToCart != null) {
-            btnGoToCart.setOnClickListener(v -> {
+        // 🛒 SỬA LỖI Ở ĐÂY: Thêm vào giỏ trước khi chuyển màn hình
+        ImageView btnAddToCart = findViewById(cartBtnId);
+        if (btnAddToCart != null) {
+            btnAddToCart.setOnClickListener(v -> {
+                // Thêm vào giỏ hàng thật sự thông qua CartManager
+                CartManager.addItem(new CartItem(name, price, imageRes, 1));
+                
+                Toast.makeText(this, "Đã thêm " + name + " vào giỏ!", Toast.LENGTH_SHORT).show();
+                
+                // Mở giỏ hàng để xem
                 Intent intent = new Intent(ProductActivity.this, CartActivity.class);
                 startActivity(intent);
             });

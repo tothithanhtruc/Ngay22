@@ -3,6 +3,7 @@ package com.example.hitcapp;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
@@ -12,9 +13,15 @@ import java.util.List;
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder> {
 
     private List<CartItem> cartItemList;
+    private OnCartChangeListener listener;
 
-    public CartAdapter(List<CartItem> cartItemList) {
+    public interface OnCartChangeListener {
+        void onAmountChanged();
+    }
+
+    public CartAdapter(List<CartItem> cartItemList, OnCartChangeListener listener) {
         this.cartItemList = cartItemList;
+        this.listener = listener;
     }
 
     @NonNull
@@ -31,16 +38,27 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         holder.tvPrice.setText(item.getPrice());
         holder.imgProduct.setImageResource(item.getImageId());
         holder.tvQuantity.setText(String.valueOf(item.getQuantity()));
+        
+        // Trạng thái CheckBox
+        holder.cbItem.setOnCheckedChangeListener(null); // Tránh loop khi rebinding
+        holder.cbItem.setChecked(item.isSelected());
+
+        holder.cbItem.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            item.setSelected(isChecked);
+            if (listener != null) listener.onAmountChanged();
+        });
 
         holder.btnPlus.setOnClickListener(v -> {
             item.setQuantity(item.getQuantity() + 1);
             notifyItemChanged(position);
+            if (listener != null) listener.onAmountChanged();
         });
 
         holder.btnMinus.setOnClickListener(v -> {
             if (item.getQuantity() > 1) {
                 item.setQuantity(item.getQuantity() - 1);
                 notifyItemChanged(position);
+                if (listener != null) listener.onAmountChanged();
             }
         });
 
@@ -48,6 +66,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             cartItemList.remove(position);
             notifyItemRemoved(position);
             notifyItemRangeChanged(position, cartItemList.size());
+            if (listener != null) listener.onAmountChanged();
         });
     }
 
@@ -59,6 +78,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
     public static class CartViewHolder extends RecyclerView.ViewHolder {
         ImageView imgProduct, btnPlus, btnMinus, btnDelete;
         TextView tvName, tvPrice, tvQuantity;
+        CheckBox cbItem;
 
         public CartViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -69,6 +89,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             btnPlus = itemView.findViewById(R.id.btnPlus);
             btnMinus = itemView.findViewById(R.id.btnMinus);
             btnDelete = itemView.findViewById(R.id.btnDelete);
+            cbItem = itemView.findViewById(R.id.cbItem);
         }
     }
 }
