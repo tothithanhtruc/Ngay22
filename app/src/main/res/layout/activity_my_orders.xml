@@ -112,13 +112,22 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Order List Placeholder -->
+            <!-- Real Order List -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rcvOrders"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:padding="8dp" />
+
+            <!-- Empty State Placeholder (Visible when no orders) -->
             <LinearLayout
-                android:id="@+id/orderListContainer"
+                android:id="@+id/orderEmptyPlaceholder"
                 android:layout_width="match_parent"
                 android:layout_height="250dp"
                 android:gravity="center"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="gone">
 
                 <ImageView
                     android:layout_width="80dp"

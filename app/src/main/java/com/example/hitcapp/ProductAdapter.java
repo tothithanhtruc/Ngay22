@@ -9,7 +9,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import com.bumptech.glide.Glide;
 import java.util.List;
+import java.util.Locale;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductViewHolder> {
 
@@ -21,10 +23,14 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         this.productList = productList;
     }
 
+    public void setFilteredList(List<Product> filteredList) {
+        this.productList = filteredList;
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
     public ProductViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Đã sửa: Sử dụng item_product_recommend thay vì item_product_horizontal
         View view = LayoutInflater.from(context).inflate(R.layout.item_product_recommend, parent, false);
         return new ProductViewHolder(view);
     }
@@ -32,22 +38,31 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     @Override
     public void onBindViewHolder(@NonNull ProductViewHolder holder, int position) {
         Product product = productList.get(position);
-        holder.tvName.setText(product.getName());
-        holder.tvPrice.setText(product.getPrice());
-        holder.imgProduct.setImageResource(product.getImageId());
+        holder.tvName.setText(product.getTitle());
+        
+        // Chuyển đổi giá sang VNĐ (giả định 1$ = 25.000đ)
+        double priceVnd = product.getPrice() * 25000;
+        String formattedPrice = String.format(Locale.GERMANY, "%,.0f đ", priceVnd);
+        holder.tvPrice.setText(formattedPrice);
+
+        Glide.with(context)
+                .load(product.getImage())
+                .placeholder(R.drawable.hinh)
+                .into(holder.imgProduct);
 
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, ProductDetailActivity.class);
-            intent.putExtra("productName", product.getName());
-            intent.putExtra("productPrice", product.getPrice());
-            intent.putExtra("productImage", product.getImageId());
+            intent.putExtra("productName", product.getTitle());
+            intent.putExtra("productPrice", formattedPrice);
+            intent.putExtra("productImage", product.getImage());
+            intent.putExtra("productDescription", product.getDescription()); // Thêm mô tả
             context.startActivity(intent);
         });
     }
 
     @Override
     public int getItemCount() {
-        return productList.size();
+        return productList == null ? 0 : productList.size();
     }
 
     public static class ProductViewHolder extends RecyclerView.ViewHolder {

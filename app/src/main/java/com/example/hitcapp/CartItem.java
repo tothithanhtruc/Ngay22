@@ -3,21 +3,21 @@ package com.example.hitcapp;
 public class CartItem {
     private String name;
     private String price;
-    private int imageId;
+    private String imageUrl; // Đổi từ int imageId sang String imageUrl
     private int quantity;
     private boolean isSelected;
 
-    public CartItem(String name, String price, int imageId, int quantity) {
+    public CartItem(String name, String price, String imageUrl, int quantity) {
         this.name = name;
         this.price = price;
-        this.imageId = imageId;
+        this.imageUrl = imageUrl;
         this.quantity = quantity;
         this.isSelected = false;
     }
 
     public String getName() { return name; }
     public String getPrice() { return price; }
-    public int getImageId() { return imageId; }
+    public String getImageUrl() { return imageUrl; }
     public int getQuantity() { return quantity; }
     public void setQuantity(int quantity) { this.quantity = quantity; }
     

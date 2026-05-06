@@ -2,6 +2,7 @@ package com.example.hitcapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -9,84 +10,120 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import java.util.ArrayList;
+import com.bumptech.glide.Glide;
 import java.util.List;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ProductDetailActivity extends AppCompatActivity {
+
+    private String name, price, imageUrl, description;
+    private int productId = -1;
+
+    private ImageView imgProductDetail;
+    private TextView tvProductNameDetail, tvProductPriceDetail, tvDescription;
+    private Button btnAddToCart, btnBuyNow;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_detail);
 
-        // Ánh xạ View
-        ImageView btnBack = findViewById(R.id.btnBack);
-        ImageView imgProductDetail = findViewById(R.id.imgProductDetail);
-        TextView tvProductNameDetail = findViewById(R.id.tvProductNameDetail);
-        TextView tvProductPriceDetail = findViewById(R.id.tvProductPriceDetail);
-        Button btnAddToCart = findViewById(R.id.btnAddToCart);
-        Button btnBuyNow = findViewById(R.id.btnBuyNow);
-        RecyclerView rcvRecommended = findViewById(R.id.rcvRecommendedDetail);
+        initViews();
 
-        // Nhận dữ liệu từ Intent
-        String name = getIntent().getStringExtra("productName");
-        String price = getIntent().getStringExtra("productPrice");
-        int imageId = getIntent().getIntExtra("productImage", R.drawable.hinh);
+        Intent intent = getIntent();
+        productId = intent.getIntExtra("productId", -1);
 
-        // Hiển thị dữ liệu
-        if (name != null) tvProductNameDetail.setText(name);
-        if (price != null) tvProductPriceDetail.setText(price);
-        imgProductDetail.setImageResource(imageId);
+        if (productId != -1) {
+            fetchProductDetailFromApi(productId);
+        } else {
+            name = intent.getStringExtra("productName");
+            price = intent.getStringExtra("productPrice");
+            imageUrl = intent.getStringExtra("productImage");
+            description = intent.getStringExtra("productDescription");
+            displayProductData();
+        }
 
-        // Nút quay lại
-        btnBack.setOnClickListener(v -> finish());
+        // Luôn load danh sách gợi ý khi mở trang chi tiết
+        setupRecommendations(findViewById(R.id.rcvRecommendedDetail));
+    }
 
-        // 🛒 Xử lý thêm vào giỏ hàng
-        if (btnAddToCart != null) {
-            btnAddToCart.setOnClickListener(v -> {
-                CartItem newItem = new CartItem(name, price, imageId, 1);
+    private void initViews() {
+        imgProductDetail = findViewById(R.id.imgProductDetail);
+        tvProductNameDetail = findViewById(R.id.tvProductNameDetail);
+        tvProductPriceDetail = findViewById(R.id.tvProductPriceDetail);
+        tvDescription = findViewById(R.id.tvProductDescription);
+        btnAddToCart = findViewById(R.id.btnAddToCart);
+        btnBuyNow = findViewById(R.id.btnBuyNow);
+        
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
+        
+        // Thêm vào giỏ hàng
+        btnAddToCart.setOnClickListener(v -> {
+            if (name != null) {
+                CartItem newItem = new CartItem(name, price, imageUrl, 1);
                 CartManager.addItem(newItem);
-                Toast.makeText(this, "Đã thêm " + name + " vào giỏ hàng!", Toast.LENGTH_SHORT).show();
-            });
-        }
+                Toast.makeText(this, "Đã thêm vào giỏ hàng!", Toast.LENGTH_SHORT).show();
+            }
+        });
 
-        // ⚡ Xử lý Mua ngay
-        if (btnBuyNow != null) {
-            btnBuyNow.setOnClickListener(v -> {
-                for (CartItem item : CartManager.getCartItems()) {
-                    item.setSelected(false);
-                }
-                CartItem targetItem = null;
-                for (CartItem item : CartManager.getCartItems()) {
-                    if (item.getName().equals(name)) {
-                        targetItem = item;
-                        break;
-                    }
-                }
-                if (targetItem == null) {
-                    targetItem = new CartItem(name, price, imageId, 1);
-                    CartManager.getCartItems().add(targetItem);
-                }
-                targetItem.setSelected(true);
-                Intent intent = new Intent(ProductDetailActivity.this, PaymentActivity.class);
-                startActivity(intent);
-            });
-        }
+        // Mua ngay: Thêm vào giỏ và đi tới trang giỏ hàng ngay lập tức
+        btnBuyNow.setOnClickListener(v -> {
+            if (name != null) {
+                CartItem newItem = new CartItem(name, price, imageUrl, 1);
+                newItem.setSelected(true); // Đánh dấu là đã chọn để thanh toán
+                CartManager.addItem(newItem);
+                startActivity(new Intent(this, CartActivity.class));
+            }
+        });
+    }
 
-        // 🌸 Hiển thị Sản phẩm bạn có thể thích
-        setupRecommendations(rcvRecommended);
+    private void fetchProductDetailFromApi(int id) {
+        RetrofitClient.INSTANCE.getInstance().getProductDetail(id).enqueue(new Callback<Product>() {
+            @Override
+            public void onResponse(Call<Product> call, Response<Product> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Product p = response.body();
+                    name = p.getTitle();
+                    price = String.valueOf(p.getPrice()) + " $";
+                    imageUrl = p.getImage();
+                    description = p.getDescription();
+                    displayProductData();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Product> call, Throwable t) {
+                Toast.makeText(ProductDetailActivity.this, "Không thể lấy thông tin sản phẩm", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void displayProductData() {
+        tvProductNameDetail.setText(name);
+        tvProductPriceDetail.setText(price);
+        tvDescription.setText(description);
+        Glide.with(this).load(imageUrl).placeholder(R.drawable.hinh).into(imgProductDetail);
     }
 
     private void setupRecommendations(RecyclerView rcv) {
         if (rcv == null) return;
-        List<Product> recommendedList = new ArrayList<>();
-        recommendedList.add(new Product("Hoa Cúc Trắng", "120.000đ", R.drawable.hinh));
-        recommendedList.add(new Product("Hoa Lan Hồ Điệp", "450.000đ", R.drawable.hinh3));
-        recommendedList.add(new Product("Hoa Hướng Dương", "180.000đ", R.drawable.hinh4));
-        recommendedList.add(new Product("Hoa Ly Trắng", "220.000đ", R.drawable.hinh5));
-
-        ProductAdapter adapter = new ProductAdapter(this, recommendedList);
-        rcv.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        rcv.setAdapter(adapter);
+        RetrofitClient.INSTANCE.getInstance().getProducts().enqueue(new Callback<List<Product>>() {
+            @Override
+            public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Product> products = response.body();
+                    // Hiển thị 8 sản phẩm gợi ý
+                    ProductAdapter adapter = new ProductAdapter(ProductDetailActivity.this, products.subList(0, Math.min(products.size(), 8)));
+                    rcv.setLayoutManager(new LinearLayoutManager(ProductDetailActivity.this, LinearLayoutManager.HORIZONTAL, false));
+                    rcv.setAdapter(adapter);
+                }
+            }
+            @Override
+            public void onFailure(Call<List<Product>> call, Throwable t) {
+                Log.e("API_ERROR", "Gợi ý: " + t.getMessage());
+            }
+        });
     }
 }

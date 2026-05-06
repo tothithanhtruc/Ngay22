@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import com.bumptech.glide.Glide;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -70,7 +71,7 @@ public class PaymentActivity extends AppCompatActivity {
         // Lấy danh sách sản phẩm từ CartManager (chỉ lấy món được chọn)
         List<CartItem> cartItems = CartManager.getCartItems();
         List<CartItem> selectedItems = new ArrayList<>();
-        long subtotal = 0;
+        double subtotal = 0;
 
         if (lnItemsContainer != null) {
             for (CartItem item : cartItems) {
@@ -83,16 +84,24 @@ public class PaymentActivity extends AppCompatActivity {
                     TextView tvQuantity = itemView.findViewById(R.id.tvProductQuantityPayment);
                     TextView tvPrice = itemView.findViewById(R.id.tvProductPricePayment);
 
-                    imgProduct.setImageResource(item.getImageId());
+                    // Sửa lỗi: Dùng Glide tải ảnh từ URL
+                    Glide.with(this)
+                            .load(item.getImageUrl())
+                            .placeholder(R.drawable.hinh)
+                            .into(imgProduct);
+
                     tvName.setText(item.getName());
                     tvQuantity.setText("Số lượng: " + item.getQuantity());
                     tvPrice.setText(item.getPrice());
 
+                    // Tính toán tiền (Xử lý chuỗi giá)
                     try {
-                        String priceStr = item.getPrice().replace(".", "").replace("đ", "").trim();
-                        long priceValue = Long.parseLong(priceStr);
+                        String cleanPrice = item.getPrice().replaceAll("[^0-9.]", "");
+                        double priceValue = Double.parseDouble(cleanPrice);
                         subtotal += priceValue * item.getQuantity();
-                    } catch (Exception e) { e.printStackTrace(); }
+                    } catch (Exception e) { 
+                        e.printStackTrace(); 
+                    }
 
                     lnItemsContainer.addView(itemView);
                 }
@@ -100,16 +109,16 @@ public class PaymentActivity extends AppCompatActivity {
         }
 
         // Hiển thị tổng tiền
-        long shippingFee = subtotal > 0 ? 30000 : 0;
-        long total = subtotal + shippingFee;
+        double shippingFee = subtotal > 0 ? (subtotal > 1000 ? 30000 : 10) : 0;
+        double total = subtotal + shippingFee;
 
-        if (tvSubtotal != null) tvSubtotal.setText(formatPrice(subtotal));
-        if (tvTotalFinal != null) tvTotalFinal.setText(formatPrice(total));
-        if (tvBottomTotal != null) tvBottomTotal.setText(formatPrice(total));
+        if (tvSubtotal != null) tvSubtotal.setText(formatDisplayPrice(subtotal));
+        if (tvTotalFinal != null) tvTotalFinal.setText(formatDisplayPrice(total));
+        if (tvBottomTotal != null) tvBottomTotal.setText(formatDisplayPrice(total));
 
         btnBack.setOnClickListener(v -> finish());
         
-        final long finalTotal = total;
+        final double finalTotal = total;
         btnOrder.setOnClickListener(v -> {
             if (selectedItems.isEmpty()) {
                 Toast.makeText(this, "Không có sản phẩm nào để đặt!", Toast.LENGTH_SHORT).show();
@@ -119,7 +128,7 @@ public class PaymentActivity extends AppCompatActivity {
             // Lưu đơn hàng vào OrderManager
             String orderId = "ORD" + System.currentTimeMillis();
             String date = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new Date());
-            Order newOrder = new Order(orderId, new ArrayList<>(selectedItems), finalTotal, "WaitConfirm", date);
+            Order newOrder = new Order(orderId, new ArrayList<>(selectedItems), (long)finalTotal, "WaitConfirm", date);
             OrderManager.addOrder(newOrder);
 
             // Xóa những sp đã đặt khỏi giỏ hàng
@@ -208,7 +217,11 @@ public class PaymentActivity extends AppCompatActivity {
         builder.show();
     }
 
-    private String formatPrice(long price) {
-        return String.format("%,d", price).replace(',', '.') + "đ";
+    private String formatDisplayPrice(double price) {
+        if (price > 1000) {
+            return String.format(Locale.getDefault(), "%,.0f đ", price).replace(',', '.');
+        } else {
+            return String.format(Locale.US, "%.2f $", price);
+        }
     }
 }

@@ -9,6 +9,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import com.bumptech.glide.Glide;
 import java.util.List;
 
 public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHolder> {
@@ -46,7 +47,12 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
             TextView qty = itemView.findViewById(R.id.tvProductQuantityOrder);
             TextView price = itemView.findViewById(R.id.tvProductPriceOrder);
 
-            img.setImageResource(item.getImageId());
+            // Sửa lỗi: Sử dụng Glide để tải ảnh từ URL thay vì Resource ID
+            Glide.with(context)
+                    .load(item.getImageUrl())
+                    .placeholder(R.drawable.hinh)
+                    .into(img);
+
             name.setText(item.getName());
             qty.setText("x" + item.getQuantity());
             price.setText(item.getPrice());

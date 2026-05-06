@@ -7,14 +7,14 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF">
 
-    <!-- Logo -->
+    <!-- Header / Logo -->
     <TextView
         android:id="@+id/tvLogo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
-        android:text="Flower Garden 🌸"
+        android:text="HITC Shop 🛍️"
         android:textColor="#E91E63"
         android:textSize="22sp"
         android:textStyle="bold"
@@ -40,166 +40,120 @@
             android:layout_weight="1"
             android:background="@android:drawable/editbox_background_normal"
             android:drawableEnd="@android:drawable/ic_menu_search"
-            android:hint="Tìm hoa ..."
+            android:hint="Tìm kiếm sản phẩm ..."
             android:paddingStart="15dp"
             android:paddingEnd="15dp"
-            android:completionThreshold="1"
-            android:imeOptions="actionSearch"
             android:inputType="text"/>
 
         <ImageView
             android:id="@+id/btnCart"
-            android:layout_width="wrap_content"
+            android:layout_width="40dp"
             android:layout_height="match_parent"
             android:layout_marginStart="10dp"
-            android:padding="6dp"
+            android:padding="8dp"
             android:src="@drawable/shopping_cart"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
             app:tint="#FF4400" />
-
 
         <ImageView
             android:id="@+id/btnMessage"
-            android:layout_width="wrap_content"
+            android:layout_width="40dp"
             android:layout_height="match_parent"
             android:layout_marginStart="5dp"
-            android:padding="6dp"
+            android:padding="8dp"
             android:src="@android:drawable/ic_dialog_email"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
             app:tint="#FF4400" />
-
     </LinearLayout>
 
-    <!-- Banner -->
-    <androidx.cardview.widget.CardView
-        android:id="@+id/banner"
-        android:layout_width="0dp"
-        android:layout_height="140dp"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="15dp"
-        app:cardCornerRadius="20dp"
-        app:cardElevation="0dp"
-        app:cardBackgroundColor="#FFF0F3"
+    <!-- Scrollable Content -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         app:layout_constraintTop_toBottomOf="@id/searchContainer"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintBottom_toTopOf="@id/bottom_navigation">
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="20dp">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="20dp">
 
+            <!-- Banner Quảng cáo -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/banner"
+                android:layout_width="match_parent"
+                android:layout_height="140dp"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="15dp"
+                app:cardCornerRadius="20dp"
+                app:cardBackgroundColor="#FFF0F3">
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="20dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Giảm giá 50%\nCho đơn hàng đầu"
+                        android:textColor="#C2185B"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+                    <Button
+                        android:id="@+id/btnBannerBuyNow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="35dp"
+                        android:layout_alignParentBottom="true"
+                        android:text="Mua ngay"
+                        android:backgroundTint="#E91E63"
+                        android:textSize="10sp"/>
+                </RelativeLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Khuyến mãi cực sốc (Ngang) -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Giảm giá 50%\nĐơn đầu tiên"
-                android:textColor="#C2185B"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="25dp"
+                android:text="Khuyến mãi cực sốc 🔥"
+                android:textSize="18sp"
+                android:textColor="#FF5722"
+                android:textStyle="bold" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvPromoProducts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:paddingHorizontal="10dp"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+            <!-- Tiêu đề Sản phẩm nổi bật (Dọc/Lưới) -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="25dp"
+                android:text="Sản phẩm nổi bật ✨"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="35dp"
-                android:layout_alignParentBottom="true"
-                android:text="Mua ngay"
-                android:backgroundTint="#E91E63"
-                android:textSize="10sp"
-                android:padding="0dp"/>
-        </RelativeLayout>
-    </androidx.cardview.widget.CardView>
-
-    <!-- Title -->
-    <TextView
-        android:id="@+id/label1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="Sản phẩm bán chạy"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/banner"
-        app:layout_constraintStart_toStartOf="@id/banner" />
-
-    <!-- No results message -->
-    <TextView
-        android:id="@+id/tvNoResults"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Không tìm thấy sản phẩm nào 😢"
-        android:textSize="16sp"
-        android:visibility="gone"
-        android:layout_marginTop="30dp"
-        app:layout_constraintTop_toBottomOf="@id/label1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
-    <!-- Product -->
-    <LinearLayout
-        android:id="@+id/productContainer"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/label1"
-        android:paddingHorizontal="15dp">
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cvProduct1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_margin="5dp"
-            app:cardCornerRadius="15dp"
-            app:cardElevation="4dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:foreground="?android:attr/selectableItemBackground">
-            <LinearLayout
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvFeaturedProducts"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="10dp">
+                android:layout_marginTop="10dp"
+                android:paddingHorizontal="15dp"
+                android:nestedScrollingEnabled="false" />
 
-                <ImageView
-                    android:id="@+id/imgProduct1"
-                    android:layout_width="match_parent"
-                    android:layout_height="120dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/hinh" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Hoa Hồng" android:textStyle="bold" android:layout_marginTop="8dp"/>
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="199.000đ" android:textColor="#E91E63"/>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cvProduct2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_margin="5dp"
-            app:cardCornerRadius="15dp"
-            app:cardElevation="4dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:foreground="?android:attr/selectableItemBackground">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="10dp">
-
-                <ImageView
-                    android:id="@+id/imgProduct2"
-                    android:layout_width="match_parent"
-                    android:layout_height="120dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/hinh2" />
-
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Hoa Tuylip" android:textStyle="bold" android:layout_marginTop="8dp"/>
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="250.000đ" android:textColor="#E91E63"/>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-    </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
@@ -207,8 +161,6 @@
         android:layout_height="wrap_content"
         android:background="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:menu="@menu/bottom_nav_menu" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,7 +7,7 @@
     <item
         android:id="@+id/navigation_product"
         android:icon="@android:drawable/ic_menu_gallery"
-        android:title="Sản phẩm" />
+        android:title="Mẫu hoa" />
     <item
         android:id="@+id/navigation_notifications"
         android:icon="@android:drawable/ic_popup_reminder"

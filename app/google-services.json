@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "548002730032",
+    "project_id": "myandroidapp-a6d1e",
+    "storage_bucket": "myandroidapp-a6d1e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:548002730032:android:79bb5b2125971d92aa5df5",
+        "android_client_info": {
+          "package_name": "com.example.hitcapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+
+        {
+          "current_key": "AIzaSyAF38u4dhuzEjsiaaaWlupH-0CWdrQSdjA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

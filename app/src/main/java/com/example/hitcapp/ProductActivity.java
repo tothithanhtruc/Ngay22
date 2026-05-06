@@ -2,78 +2,110 @@ package com.example.hitcapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import java.util.ArrayList;
+import java.util.List;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ProductActivity extends AppCompatActivity {
+
+    private RecyclerView rvProducts;
+    private ProductAdapter productAdapter;
+    private EditText etSearch;
+    private ImageView btnCartProduct;
+    private List<Product> allProductsList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product);
 
-        // Ánh xạ và xử lý click cho từng sản phẩm
-        setupProductClick(R.id.cardProduct1, "Hoa Hồng Đỏ", "200.000đ", R.drawable.hinh6, R.id.btnGoToCart1);
-        setupProductClick(R.id.cardProduct2, "Hoa Tulip Vàng", "150.000đ", R.drawable.hinh2, R.id.btnGoToCart2);
-        setupProductClick(R.id.cardProduct3, "Hoa Cúc Trắng", "120.000đ", R.drawable.hinh, R.id.btnGoToCart3);
-        setupProductClick(R.id.cardProduct4, "Hoa Lan Hồ Điệp", "450.000đ", R.drawable.hinh3, R.id.btnGoToCart4);
-        setupProductClick(R.id.cardProduct5, "Hoa Hướng Dương", "180.000đ", R.drawable.hinh4, R.id.btnGoToCart5);
-        setupProductClick(R.id.cardProduct6, "Hoa Ly Trắng", "220.000đ", R.drawable.hinh5, R.id.btnGoToCart6);
+        rvProducts = findViewById(R.id.rvProducts);
+        etSearch = findViewById(R.id.etSearch);
+        btnCartProduct = findViewById(R.id.btnCartProduct);
+        
+        rvProducts.setLayoutManager(new GridLayoutManager(this, 2));
 
-        // Bottom Navigation
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-        if (bottomNavigationView != null) {
-            bottomNavigationView.setSelectedItemId(R.id.navigation_product);
-            bottomNavigationView.setOnItemSelectedListener(item -> {
-                int id = item.getItemId();
-                if (id == R.id.navigation_home) {
-                    startActivity(new Intent(getApplicationContext(), HomeActivity.class));
-                    overridePendingTransition(0, 0);
-                    return true;
-                } else if (id == R.id.navigation_product) {
-                    return true;
-                } else if (id == R.id.navigation_notifications) {
-                    startActivity(new Intent(getApplicationContext(), NotificationActivity.class));
-                    overridePendingTransition(0, 0);
-                    return true;
-                } else if (id == R.id.navigation_profile) {
-                    startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
-                    overridePendingTransition(0, 0);
-                    return true;
-                }
-                return false;
+        // Xử lý click vào giỏ hàng
+        if (btnCartProduct != null) {
+            btnCartProduct.setOnClickListener(v -> {
+                startActivity(new Intent(ProductActivity.this, CartActivity.class));
             });
         }
+
+        loadProductsFromApi();
+        setupSearch();
+        setupBottomNavigation();
     }
 
-    private void setupProductClick(int cardId, String name, String price, int imageRes, int cartBtnId) {
-        CardView card = findViewById(cardId);
-        if (card != null) {
-            card.setOnClickListener(v -> {
-                Intent intent = new Intent(ProductActivity.this, ProductDetailActivity.class);
-                intent.putExtra("productName", name);
-                intent.putExtra("productPrice", price);
-                intent.putExtra("productImage", imageRes);
-                startActivity(intent);
-            });
-        }
+    private void loadProductsFromApi() {
+        RetrofitClient.INSTANCE.getInstance().getProducts().enqueue(new Callback<List<Product>>() {
+            @Override
+            public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    allProductsList = response.body();
+                    productAdapter = new ProductAdapter(ProductActivity.this, allProductsList);
+                    rvProducts.setAdapter(productAdapter);
+                } else {
+                    Toast.makeText(ProductActivity.this, "Lỗi API: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
 
-        // 🛒 SỬA LỖI Ở ĐÂY: Thêm vào giỏ trước khi chuyển màn hình
-        ImageView btnAddToCart = findViewById(cartBtnId);
-        if (btnAddToCart != null) {
-            btnAddToCart.setOnClickListener(v -> {
-                // Thêm vào giỏ hàng thật sự thông qua CartManager
-                CartManager.addItem(new CartItem(name, price, imageRes, 1));
-                
-                Toast.makeText(this, "Đã thêm " + name + " vào giỏ!", Toast.LENGTH_SHORT).show();
-                
-                // Mở giỏ hàng để xem
-                Intent intent = new Intent(ProductActivity.this, CartActivity.class);
-                startActivity(intent);
-            });
+            @Override
+            public void onFailure(Call<List<Product>> call, Throwable t) {
+                Log.e("API_ERROR", "Lỗi: " + t.getMessage());
+                Toast.makeText(ProductActivity.this, "Lỗi kết nối!", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void setupSearch() {
+        etSearch.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override public void afterTextChanged(Editable s) { filter(s.toString()); }
+        });
+    }
+
+    private void filter(String text) {
+        List<Product> filtered = new ArrayList<>();
+        for (Product item : allProductsList) {
+            if (item.getTitle().toLowerCase().contains(text.toLowerCase())) {
+                filtered.add(item);
+            }
         }
+        if (productAdapter != null) productAdapter.setFilteredList(filtered);
+    }
+
+    private void setupBottomNavigation() {
+        BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
+        bottomNav.setSelectedItemId(R.id.navigation_product);
+        bottomNav.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.navigation_home) {
+                startActivity(new Intent(this, HomeActivity.class));
+                return true;
+            }
+            if (id == R.id.navigation_notifications) {
+                startActivity(new Intent(this, NotificationActivity.class));
+                return true;
+            }
+            if (id == R.id.navigation_profile) {
+                startActivity(new Intent(this, ProfileActivity.class));
+                return true;
+            }
+            return id == R.id.navigation_product;
+        });
     }
 }

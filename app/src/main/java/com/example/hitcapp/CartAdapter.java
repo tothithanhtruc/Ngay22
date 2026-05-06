@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import com.bumptech.glide.Glide;
 import java.util.List;
 
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder> {
@@ -36,11 +37,17 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         CartItem item = cartItemList.get(position);
         holder.tvName.setText(item.getName());
         holder.tvPrice.setText(item.getPrice());
-        holder.imgProduct.setImageResource(item.getImageId());
+        
+        // Sử dụng Glide để tải ảnh từ URL
+        Glide.with(holder.itemView.getContext())
+                .load(item.getImageUrl())
+                .placeholder(R.drawable.hinh)
+                .into(holder.imgProduct);
+
         holder.tvQuantity.setText(String.valueOf(item.getQuantity()));
         
         // Trạng thái CheckBox
-        holder.cbItem.setOnCheckedChangeListener(null); // Tránh loop khi rebinding
+        holder.cbItem.setOnCheckedChangeListener(null);
         holder.cbItem.setChecked(item.isSelected());
 
         holder.cbItem.setOnCheckedChangeListener((buttonView, isChecked) -> {
