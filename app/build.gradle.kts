@@ -51,5 +51,6 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
-    implementation(libs.glide) // Thêm Glide ở đây
+    implementation(libs.okhttp.logging)
+    implementation(libs.glide)
 }

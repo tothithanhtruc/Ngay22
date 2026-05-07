@@ -22,9 +22,9 @@ public class RegisterActivity extends AppCompatActivity {
 
         android.view.View mainView = findViewById(R.id.main);
         if (mainView != null) {
-            ViewCompat.setOnApplyWindowInsetsListener(mainView, (v, insets) -> {
+            ViewCompat.setOnApplyWindowInsetsListener(mainView, (insetsView, insets) -> {
                 Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-                v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+                insetsView.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
                 return insets;
             });
         }
@@ -51,9 +51,15 @@ public class RegisterActivity extends AppCompatActivity {
                 } else if (!pass.equals(confirm)) {
                     Toast.makeText(this, "Mật khẩu xác nhận không khớp!", Toast.LENGTH_SHORT).show();
                 } else {
-                    // Nếu đã nhập đủ
+                    // Lưu thông tin người dùng vào UserManager để hiển thị ở Profile
+                    UserManager.saveUserName(this, user);
+                    UserManager.saveUserEmail(this, email);
+                    
                     Toast.makeText(this, "Đăng ký thành công!", Toast.LENGTH_SHORT).show();
+                    
+                    // Chuyển sang màn hình chính
                     Intent intent = new Intent(RegisterActivity.this, HomeActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                     finish();
                 }

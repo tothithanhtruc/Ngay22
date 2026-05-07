@@ -1,8 +1,9 @@
 package com.example.hitcapp;
 
 import com.google.gson.annotations.SerializedName;
+import java.io.Serializable;
 
-public class Product {
+public class Product implements Serializable {
     @SerializedName("id")
     private int id;
     
@@ -17,6 +18,11 @@ public class Product {
     
     @SerializedName("image")
     private String image;
+    
+    @SerializedName("category")
+    private String category;
+
+    public Product() {}
 
     public Product(int id, String title, double price, String description, String image) {
         this.id = id;
@@ -26,23 +32,10 @@ public class Product {
         this.image = image;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public String getImage() {
-        return image;
-    }
+    public int getId() { return id; }
+    public String getTitle() { return title; }
+    public double getPrice() { return price; }
+    public String getDescription() { return description; }
+    public String getImage() { return image; }
+    public String getCategory() { return category; }
 }

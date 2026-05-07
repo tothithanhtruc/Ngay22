@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,10 +13,17 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class ProfileActivity extends AppCompatActivity {
 
+    private TextView tvUserName, tvUserEmail;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+
+        tvUserName = findViewById(R.id.tvUserName);
+        tvUserEmail = findViewById(R.id.tvUserEmail);
+
+        loadUserData();
 
         // 🛒 Nút Giỏ hàng trong trang Profile
         ImageView btnCart = findViewById(R.id.btnCartProfile);
@@ -44,6 +52,16 @@ public class ProfileActivity extends AppCompatActivity {
             });
         }
 
+        // 🔍 Xem lại sản phẩm đã mua (Chuyển đến tab Đã giao trong Đơn hàng)
+        LinearLayout btnViewPurchased = findViewById(R.id.btnViewProductDetailFromProfile);
+        if (btnViewPurchased != null) {
+            btnViewPurchased.setOnClickListener(v -> {
+                Intent intent = new Intent(ProfileActivity.this, MyOrdersActivity.class);
+                intent.putExtra("ORDER_STATUS", "Delivered");
+                startActivity(intent);
+            });
+        }
+
         // Nút Đăng xuất trong trang Profile
         LinearLayout btnLogout = findViewById(R.id.btnLogoutProfile);
         if (btnLogout != null) {
@@ -66,14 +84,17 @@ public class ProfileActivity extends AppCompatActivity {
                 if (id == R.id.navigation_home) {
                     startActivity(new Intent(getApplicationContext(), HomeActivity.class));
                     overridePendingTransition(0, 0);
+                    finish();
                     return true;
                 } else if (id == R.id.navigation_product) {
                     startActivity(new Intent(getApplicationContext(), ProductActivity.class));
                     overridePendingTransition(0, 0);
+                    finish();
                     return true;
                 } else if (id == R.id.navigation_notifications) {
                     startActivity(new Intent(getApplicationContext(), NotificationActivity.class));
                     overridePendingTransition(0, 0);
+                    finish();
                     return true;
                 } else if (id == R.id.navigation_profile) {
                     return true;
@@ -81,5 +102,16 @@ public class ProfileActivity extends AppCompatActivity {
                 return false;
             });
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadUserData();
+    }
+
+    private void loadUserData() {
+        if (tvUserName != null) tvUserName.setText(UserManager.getUserName(this));
+        if (tvUserEmail != null) tvUserEmail.setText(UserManager.getUserEmail(this));
     }
 }

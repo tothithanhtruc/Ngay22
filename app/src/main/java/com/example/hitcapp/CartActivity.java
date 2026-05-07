@@ -2,6 +2,7 @@ package com.example.hitcapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
@@ -13,6 +14,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class CartActivity extends AppCompatActivity implements CartAdapter.OnCartChangeListener {
@@ -20,9 +23,10 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
     private RecyclerView rcvCart;
     private CartAdapter cartAdapter;
     private List<CartItem> cartItemList;
-    private TextView tvTitle, tvTotal;
+    private TextView tvTitle, tvTotal, btnEdit;
     private CheckBox cbSelectAll;
     private Button btnBuy;
+    private boolean isEditMode = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +40,7 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
         tvTotal = findViewById(R.id.tvTotal);
         cbSelectAll = findViewById(R.id.cbSelectAll);
         btnBuy = findViewById(R.id.btnBuy);
+        btnEdit = findViewById(R.id.btnEdit);
         ImageView btnBack = findViewById(R.id.btnBack);
 
         // Lấy danh sách sản phẩm
@@ -45,6 +50,22 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
         cartAdapter = new CartAdapter(cartItemList, this);
         rcvCart.setLayoutManager(new LinearLayoutManager(this));
         rcvCart.setAdapter(cartAdapter);
+
+        // Xử lý nút Sửa
+        if (btnEdit != null) {
+            btnEdit.setOnClickListener(v -> {
+                isEditMode = !isEditMode;
+                if (isEditMode) {
+                    btnEdit.setText("Xong");
+                    btnBuy.setText("Xóa");
+                    btnBuy.setBackgroundTintList(android.content.res.ColorStateList.valueOf(0xFFE91E63));
+                } else {
+                    btnEdit.setText("Sửa");
+                    btnBuy.setText("Thanh toán");
+                    btnBuy.setBackgroundTintList(android.content.res.ColorStateList.valueOf(0xFFFF5F00));
+                }
+            });
+        }
 
         // Xử lý nút Chọn tất cả
         if (cbSelectAll != null) {
@@ -67,25 +88,60 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
             btnBack.setOnClickListener(v -> finish());
         }
 
-        // 💳 Nút Thanh toán
+        // 💳 Nút Thanh toán / Xóa
         if (btnBuy != null) {
             btnBuy.setOnClickListener(v -> {
-                // Kiểm tra xem có sản phẩm nào được chọn không
-                boolean hasSelection = false;
-                for (CartItem item : cartItemList) {
-                    if (item.isSelected()) {
-                        hasSelection = true;
-                        break;
+                if (isEditMode) {
+                    // Chế độ Xóa
+                    deleteSelectedItems();
+                } else {
+                    // Chế độ Thanh toán
+                    boolean hasSelection = false;
+                    for (CartItem item : cartItemList) {
+                        if (item.isSelected()) {
+                            hasSelection = true;
+                            break;
+                        }
+                    }
+
+                    if (hasSelection) {
+                        Intent intent = new Intent(CartActivity.this, PaymentActivity.class);
+                        startActivity(intent);
+                    } else {
+                        Toast.makeText(this, "Vui lòng chọn ít nhất một sản phẩm!", Toast.LENGTH_SHORT).show();
                     }
                 }
-
-                if (hasSelection) {
-                    Intent intent = new Intent(CartActivity.this, PaymentActivity.class);
-                    startActivity(intent);
-                } else {
-                    Toast.makeText(this, "Vui lòng chọn ít nhất một sản phẩm!", Toast.LENGTH_SHORT).show();
-                }
             });
+        }
+    }
+
+    private void deleteSelectedItems() {
+        Iterator<CartItem> iterator = cartItemList.iterator();
+        boolean removed = false;
+        while (iterator.hasNext()) {
+            CartItem item = iterator.next();
+            if (item.isSelected()) {
+                iterator.remove();
+                removed = true;
+            }
+        }
+        
+        if (removed) {
+            cartAdapter.notifyDataSetChanged();
+            onAmountChanged();
+            updateCartCount();
+            Toast.makeText(this, "Đã xóa sản phẩm thành công!", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Vui lòng chọn sản phẩm cần xóa!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (cartAdapter != null) {
+            cartAdapter.notifyDataSetChanged();
+            onAmountChanged();
         }
     }
 
@@ -102,17 +158,19 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.OnCar
                     long priceValue = Long.parseLong(priceStr);
                     total += priceValue * item.getQuantity();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    // Handle $ prices if any
+                    try {
+                        String clean = item.getPrice().replaceAll("[^0-9]", "");
+                        total += Long.parseLong(clean) * item.getQuantity();
+                    } catch (Exception ignored) {}
                 }
             }
         }
 
-        // Hiển thị tổng tiền
         if (tvTotal != null) {
             tvTotal.setText(formatPrice(total));
         }
 
-        // Cập nhật trạng thái nút "Chọn tất cả"
         if (cbSelectAll != null) {
             cbSelectAll.setChecked(selectedCount == cartItemList.size() && cartItemList.size() > 0);
         }

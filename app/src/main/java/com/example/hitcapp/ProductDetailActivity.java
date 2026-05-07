@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import java.util.List;
+import java.util.Locale;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -19,11 +20,9 @@ import retrofit2.Response;
 public class ProductDetailActivity extends AppCompatActivity {
 
     private String name, price, imageUrl, description;
-    private int productId = -1;
 
     private ImageView imgProductDetail;
     private TextView tvProductNameDetail, tvProductPriceDetail, tvDescription;
-    private Button btnAddToCart, btnBuyNow;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +32,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         initViews();
 
         Intent intent = getIntent();
-        productId = intent.getIntExtra("productId", -1);
+        int productId = intent.getIntExtra("productId", -1);
 
         if (productId != -1) {
             fetchProductDetailFromApi(productId);
@@ -45,7 +44,6 @@ public class ProductDetailActivity extends AppCompatActivity {
             displayProductData();
         }
 
-        // Luôn load danh sách gợi ý khi mở trang chi tiết
         setupRecommendations(findViewById(R.id.rcvRecommendedDetail));
     }
 
@@ -54,12 +52,11 @@ public class ProductDetailActivity extends AppCompatActivity {
         tvProductNameDetail = findViewById(R.id.tvProductNameDetail);
         tvProductPriceDetail = findViewById(R.id.tvProductPriceDetail);
         tvDescription = findViewById(R.id.tvProductDescription);
-        btnAddToCart = findViewById(R.id.btnAddToCart);
-        btnBuyNow = findViewById(R.id.btnBuyNow);
+        Button btnAddToCart = findViewById(R.id.btnAddToCart);
+        Button btnBuyNow = findViewById(R.id.btnBuyNow);
         
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
         
-        // Thêm vào giỏ hàng
         btnAddToCart.setOnClickListener(v -> {
             if (name != null) {
                 CartItem newItem = new CartItem(name, price, imageUrl, 1);
@@ -68,13 +65,24 @@ public class ProductDetailActivity extends AppCompatActivity {
             }
         });
 
-        // Mua ngay: Thêm vào giỏ và đi tới trang giỏ hàng ngay lập tức
         btnBuyNow.setOnClickListener(v -> {
             if (name != null) {
+                for (CartItem item : CartManager.getCartItems()) {
+                    item.setSelected(false);
+                }
+
                 CartItem newItem = new CartItem(name, price, imageUrl, 1);
-                newItem.setSelected(true); // Đánh dấu là đã chọn để thanh toán
+                newItem.setSelected(true);
                 CartManager.addItem(newItem);
-                startActivity(new Intent(this, CartActivity.class));
+
+                for (CartItem item : CartManager.getCartItems()) {
+                    if (item.getName().equals(name)) {
+                        item.setSelected(true);
+                        break;
+                    }
+                }
+
+                startActivity(new Intent(this, PaymentActivity.class));
             }
         });
     }
@@ -86,7 +94,10 @@ public class ProductDetailActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     Product p = response.body();
                     name = p.getTitle();
-                    price = String.valueOf(p.getPrice()) + " $";
+                    
+                    double priceVnd = p.getPrice() * 25000;
+                    price = String.format(Locale.GERMANY, "%,.0f đ", priceVnd);
+                    
                     imageUrl = p.getImage();
                     description = p.getDescription();
                     displayProductData();
@@ -114,7 +125,6 @@ public class ProductDetailActivity extends AppCompatActivity {
             public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     List<Product> products = response.body();
-                    // Hiển thị 8 sản phẩm gợi ý
                     ProductAdapter adapter = new ProductAdapter(ProductDetailActivity.this, products.subList(0, Math.min(products.size(), 8)));
                     rcv.setLayoutManager(new LinearLayoutManager(ProductDetailActivity.this, LinearLayoutManager.HORIZONTAL, false));
                     rcv.setAdapter(adapter);

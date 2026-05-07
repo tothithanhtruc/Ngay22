@@ -160,23 +160,35 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Phương thức thanh toán"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:textColor="#333333"/>
 
                     <RadioGroup
+                        android:id="@+id/rgPaymentMethod"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp">
+                        android:layout_marginTop="10dp">
 
                         <RadioButton
+                            android:id="@+id/rbCOD"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:checked="true"
-                            android:text="Thanh toán khi nhận hàng (COD)" />
+                            android:text="Thanh toán khi nhận hàng (COD)"
+                            android:padding="12dp"
+                            android:buttonTint="#FF5F00"
+                            android:textSize="14sp"
+                            android:background="?attr/selectableItemBackground"/>
 
                         <RadioButton
+                            android:id="@+id/rbEWallet"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Ví điện tử (ZaloPay/Momo)" />
+                            android:text="Ví điện tử (ZaloPay/Momo)"
+                            android:padding="12dp"
+                            android:buttonTint="#FF5F00"
+                            android:textSize="14sp"
+                            android:background="?attr/selectableItemBackground"/>
                     </RadioGroup>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -277,6 +289,7 @@
         android:gravity="center_vertical|end"
         android:orientation="horizontal"
         android:paddingHorizontal="16dp"
+        android:layout_marginBottom="30dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <LinearLayout

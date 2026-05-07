@@ -49,7 +49,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         btnSignUp.setOnClickListener(v -> {
-            Toast.makeText(this, "Chức năng đăng ký đang phát triển", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
+            startActivity(intent);
         });
     }
 

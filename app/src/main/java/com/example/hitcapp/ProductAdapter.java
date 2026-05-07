@@ -52,10 +52,11 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, ProductDetailActivity.class);
+            intent.putExtra("productId", product.getId());
             intent.putExtra("productName", product.getTitle());
             intent.putExtra("productPrice", formattedPrice);
             intent.putExtra("productImage", product.getImage());
-            intent.putExtra("productDescription", product.getDescription()); // Thêm mô tả
+            intent.putExtra("productDescription", product.getDescription());
             context.startActivity(intent);
         });
     }

@@ -11,6 +11,9 @@ interface ApiService {
     @GET("products/{id}")
     fun getProductDetail(@Path("id") id: Int): Call<Product>
 
+    @GET("products/categories")
+    fun getCategories(): Call<List<String>>
+
     @GET("notifications")
     fun apiGetNotifications(): Call<List<com.example.hitcapp.Notification>>
 }

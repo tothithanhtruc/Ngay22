@@ -1,5 +1,6 @@
 package com.example.hitcapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -35,22 +36,28 @@ public class NotificationDetailActivity extends AppCompatActivity {
                 imgIcon.setImageResource(android.R.drawable.ic_menu_send);
                 imgIcon.setColorFilter(0xFFE91E63);
                 btnAction.setText("NHẬN ƯU ĐÃI NGAY");
+                btnAction.setOnClickListener(v -> {
+                    Intent intent = new Intent(this, ProductActivity.class);
+                    startActivity(intent);
+                    finish();
+                });
             } else if ("order".equals(type)) {
                 imgIcon.setImageResource(android.R.drawable.ic_menu_agenda);
                 imgIcon.setColorFilter(0xFF4CAF50);
                 btnAction.setText("KIỂM TRA ĐƠN HÀNG");
+                btnAction.setOnClickListener(v -> {
+                    Intent intent = new Intent(this, MyOrdersActivity.class);
+                    startActivity(intent);
+                    finish();
+                });
             } else {
                 imgIcon.setImageResource(android.R.drawable.ic_dialog_info);
                 imgIcon.setColorFilter(0xFF2196F3);
                 btnAction.setText("ĐÓNG");
+                btnAction.setOnClickListener(v -> finish());
             }
         }
 
         btnBack.setOnClickListener(v -> finish());
-        
-        btnAction.setOnClickListener(v -> {
-            // Xử lý hành động khi nhấn nút (ví dụ: quay lại hoặc mở trang tương ứng)
-            finish();
-        });
     }
 }

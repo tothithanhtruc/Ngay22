@@ -27,7 +27,11 @@ public class MessageActivity extends AppCompatActivity {
             messageList.add(new MessageItem("Tiệm Hoa Tươi", "Hoa hồng đỏ hiện đang có sẵn bạn nhé.", "09:15", R.drawable.hinh2));
             messageList.add(new MessageItem("Shop Hoa Đà Lạt", "Cảm ơn bạn đã ủng hộ shop!", "Hôm qua", R.drawable.hinh3));
 
-            MessageAdapter adapter = new MessageAdapter(messageList);
+            MessageAdapter adapter = new MessageAdapter(messageList, item -> {
+                Intent intent = new Intent(MessageActivity.this, ChatActivity.class);
+                intent.putExtra("shopName", item.getShopName());
+                startActivity(intent);
+            });
             rcvMessages.setLayoutManager(new LinearLayoutManager(this));
             rcvMessages.setAdapter(adapter);
         }
@@ -35,8 +39,7 @@ public class MessageActivity extends AppCompatActivity {
         // Bottom Navigation
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         if (bottomNavigationView != null) {
-            // Do "Tin nhắn" đã bị xóa khỏi menu điều hướng, chúng ta không set selected item nữa.
-            bottomNavigationView.getMenu().setGroupCheckable(0, false, true); // Bỏ chọn tất cả các mục
+            bottomNavigationView.getMenu().setGroupCheckable(0, false, true); 
             
             bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
                 @Override
@@ -91,9 +94,15 @@ class MessageItem {
 
 class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
     private List<MessageItem> messageList;
+    private OnItemClickListener listener;
 
-    public MessageAdapter(List<MessageItem> messageList) {
+    public interface OnItemClickListener {
+        void onItemClick(MessageItem item);
+    }
+
+    public MessageAdapter(List<MessageItem> messageList, OnItemClickListener listener) {
         this.messageList = messageList;
+        this.listener = listener;
     }
 
     @NonNull
@@ -110,6 +119,7 @@ class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHold
         holder.tvLastMessage.setText(item.getLastMessage());
         holder.tvTime.setText(item.getTime());
         holder.imgShopLogo.setImageResource(item.getImageRes());
+        holder.itemView.setOnClickListener(v -> listener.onItemClick(item));
     }
 
     @Override

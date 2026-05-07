@@ -32,8 +32,13 @@ public class MyOrdersActivity extends AppCompatActivity {
         setupTabs();
         loadRecommendations();
         
-        // Mặc định hiển thị tab Chờ xác nhận đầu tiên
-        filterOrders("WaitConfirm");
+        // Kiểm tra xem có yêu cầu mở tab cụ thể không (mặc định là WaitConfirm)
+        String initialStatus = getIntent().getStringExtra("ORDER_STATUS");
+        if (initialStatus == null) {
+            initialStatus = "WaitConfirm";
+        }
+        
+        selectTabByStatus(initialStatus);
     }
 
     private void initViews() {
@@ -58,8 +63,6 @@ public class MyOrdersActivity extends AppCompatActivity {
         TextView tabCancelled = findViewById(R.id.tabCancelled);
         TextView tabReturned = findViewById(R.id.tabReturned);
 
-        lastSelectedTab = tabWaitConfirm;
-
         setupTabClick(tabWaitConfirm, "WaitConfirm");
         setupTabClick(tabWaitPick, "WaitPick");
         setupTabClick(tabDelivering, "Delivering");
@@ -70,18 +73,36 @@ public class MyOrdersActivity extends AppCompatActivity {
 
     private void setupTabClick(TextView tab, String status) {
         tab.setOnClickListener(v -> {
-            // UI Update
-            if (lastSelectedTab != null) {
-                lastSelectedTab.setTextColor(ContextCompat.getColor(this, android.R.color.darker_gray));
-                lastSelectedTab.setTypeface(null, android.graphics.Typeface.NORMAL);
-            }
-            tab.setTextColor(ContextCompat.getColor(this, R.color.pink_primary));
-            tab.setTypeface(null, android.graphics.Typeface.BOLD);
-            lastSelectedTab = tab;
-
-            // Dữ liệu Update
+            updateTabUI(tab);
             filterOrders(status);
         });
+    }
+
+    private void selectTabByStatus(String status) {
+        TextView targetTab;
+        switch (status) {
+            case "WaitPick": targetTab = findViewById(R.id.tabWaitPick); break;
+            case "Delivering": targetTab = findViewById(R.id.tabDelivering); break;
+            case "Delivered": targetTab = findViewById(R.id.tabDelivered); break;
+            case "Cancelled": targetTab = findViewById(R.id.tabCancelled); break;
+            case "Returned": targetTab = findViewById(R.id.tabReturned); break;
+            default: targetTab = findViewById(R.id.tabWaitConfirm); break;
+        }
+        
+        if (targetTab != null) {
+            updateTabUI(targetTab);
+            filterOrders(status);
+        }
+    }
+
+    private void updateTabUI(TextView selectedTab) {
+        if (lastSelectedTab != null) {
+            lastSelectedTab.setTextColor(ContextCompat.getColor(this, android.R.color.darker_gray));
+            lastSelectedTab.setTypeface(null, android.graphics.Typeface.NORMAL);
+        }
+        selectedTab.setTextColor(ContextCompat.getColor(this, R.color.pink_primary));
+        selectedTab.setTypeface(null, android.graphics.Typeface.BOLD);
+        lastSelectedTab = selectedTab;
     }
 
     private void filterOrders(String status) {
@@ -101,7 +122,6 @@ public class MyOrdersActivity extends AppCompatActivity {
     }
 
     private void loadRecommendations() {
-        // Load sản phẩm gợi ý từ API giống trang chi tiết
         RetrofitClient.INSTANCE.getInstance().getProducts().enqueue(new Callback<List<Product>>() {
             @Override
             public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {

@@ -3,6 +3,8 @@ package com.example.hitcapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
@@ -23,6 +25,8 @@ public class HomeActivity extends AppCompatActivity {
     private ProductAdapter productAdapter, promoAdapter;
     private List<Product> productList = new ArrayList<>();
     private ImageView btnCart, btnMessage;
+    private AutoCompleteTextView searchBar;
+    private Button btnBannerBuyNow;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +38,8 @@ public class HomeActivity extends AppCompatActivity {
         rvPromoProducts = findViewById(R.id.rvPromoProducts);
         btnCart = findViewById(R.id.btnCart);
         btnMessage = findViewById(R.id.btnMessage);
+        searchBar = findViewById(R.id.searchBar);
+        btnBannerBuyNow = findViewById(R.id.btnBannerBuyNow);
 
         rvFeaturedProducts.setLayoutManager(new GridLayoutManager(this, 2));
         rvPromoProducts.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
@@ -47,6 +53,25 @@ public class HomeActivity extends AppCompatActivity {
         btnMessage.setOnClickListener(v -> {
             startActivity(new Intent(HomeActivity.this, MessageActivity.class));
         });
+
+        // Sự kiện click banner
+        if (btnBannerBuyNow != null) {
+            btnBannerBuyNow.setOnClickListener(v -> {
+                startActivity(new Intent(HomeActivity.this, ProductActivity.class));
+            });
+        }
+
+        // Sự kiện click thanh tìm kiếm
+        if (searchBar != null) {
+            searchBar.setOnClickListener(v -> {
+                startActivity(new Intent(HomeActivity.this, ProductActivity.class));
+            });
+            searchBar.setOnFocusChangeListener((v, hasFocus) -> {
+                if (hasFocus) {
+                    startActivity(new Intent(HomeActivity.this, ProductActivity.class));
+                }
+            });
+        }
 
         loadProductsFromApi();
         setupBottomNavigation();
@@ -87,10 +112,25 @@ public class HomeActivity extends AppCompatActivity {
         bottomNav.setSelectedItemId(R.id.navigation_home);
         bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
-            if (id == R.id.navigation_product) startActivity(new Intent(this, ProductActivity.class));
-            else if (id == R.id.navigation_notifications) startActivity(new Intent(this, NotificationActivity.class));
-            else if (id == R.id.navigation_profile) startActivity(new Intent(this, ProfileActivity.class));
-            return true;
+            if (id == R.id.navigation_home) {
+                return true;
+            } else if (id == R.id.navigation_product) {
+                startActivity(new Intent(this, ProductActivity.class));
+                overridePendingTransition(0, 0);
+                finish();
+                return true;
+            } else if (id == R.id.navigation_notifications) {
+                startActivity(new Intent(this, NotificationActivity.class));
+                overridePendingTransition(0, 0);
+                finish();
+                return true;
+            } else if (id == R.id.navigation_profile) {
+                startActivity(new Intent(this, ProfileActivity.class));
+                overridePendingTransition(0, 0);
+                finish();
+                return true;
+            }
+            return false;
         });
     }
 }

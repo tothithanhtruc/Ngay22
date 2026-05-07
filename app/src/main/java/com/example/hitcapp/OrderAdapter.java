@@ -4,10 +4,13 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import java.util.List;
@@ -37,6 +40,25 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
         holder.tvOrderTotal.setText(formatPrice(order.getTotalAmount()));
         holder.tvOrderStatus.setText(getStatusText(order.getStatus()));
 
+        // Hiển thị nút Hủy đơn nếu trạng thái là Chờ xác nhận
+        if ("WaitConfirm".equalsIgnoreCase(order.getStatus())) {
+            holder.btnCancelOrder.setVisibility(View.VISIBLE);
+            holder.btnCancelOrder.setOnClickListener(v -> {
+                new AlertDialog.Builder(context)
+                        .setTitle("Hủy đơn hàng")
+                        .setMessage("Bạn có chắc chắn muốn hủy đơn hàng này không?")
+                        .setPositiveButton("Hủy đơn", (dialog, which) -> {
+                            order.setStatus("Cancelled");
+                            notifyItemChanged(position);
+                            Toast.makeText(context, "Đã hủy đơn hàng thành công!", Toast.LENGTH_SHORT).show();
+                        })
+                        .setNegativeButton("Quay lại", null)
+                        .show();
+            });
+        } else {
+            holder.btnCancelOrder.setVisibility(View.GONE);
+        }
+
         // Clear and add items to the nested layout
         holder.lnOrderItems.removeAllViews();
         for (CartItem item : order.getItems()) {
@@ -47,7 +69,6 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
             TextView qty = itemView.findViewById(R.id.tvProductQuantityOrder);
             TextView price = itemView.findViewById(R.id.tvProductPriceOrder);
 
-            // Sửa lỗi: Sử dụng Glide để tải ảnh từ URL thay vì Resource ID
             Glide.with(context)
                     .load(item.getImageUrl())
                     .placeholder(R.drawable.hinh)
@@ -85,6 +106,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
     public static class OrderViewHolder extends RecyclerView.ViewHolder {
         TextView tvOrderId, tvOrderStatus, tvOrderDate, tvOrderTotal;
         LinearLayout lnOrderItems;
+        Button btnCancelOrder;
 
         public OrderViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -93,6 +115,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
             tvOrderDate = itemView.findViewById(R.id.tvOrderDate);
             tvOrderTotal = itemView.findViewById(R.id.tvOrderTotal);
             lnOrderItems = itemView.findViewById(R.id.lnOrderItems);
+            btnCancelOrder = itemView.findViewById(R.id.btnCancelOrder);
         }
     }
 }

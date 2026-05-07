@@ -9,24 +9,29 @@
     <LinearLayout
         android:id="@+id/topBar"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="60dp"
         android:background="#FFFFFF"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="10dp"
+        android:paddingHorizontal="10dp"
+        android:layout_marginTop="32dp"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/btnBack"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="12dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@android:drawable/ic_menu_revert"
             app:tint="#E91E63" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="8dp"
             android:text="Cài đặt tài khoản"
             android:textSize="18sp"
             android:textStyle="bold"
@@ -205,6 +210,7 @@
                     android:orientation="vertical">
 
                     <LinearLayout
+                        android:id="@+id/btnHelpCenter"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
                         android:gravity="center_vertical"
@@ -228,6 +234,7 @@
                     <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#EEEEEE"/>
 
                     <LinearLayout
+                        android:id="@+id/btnPrivacyPolicy"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
                         android:gravity="center_vertical"
