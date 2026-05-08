@@ -5,8 +5,8 @@ import java.io.Serializable;
 public class Notification implements Serializable {
     private String title;
     private String content;
-    private String type;     // "promo", "product", "order"
-    private String targetId; // ID của sản phẩm hoặc đơn hàng
+    private String type;
+    private String targetId;
     private String imageUrl;
     private String timestamp;
     private String fullMessage;

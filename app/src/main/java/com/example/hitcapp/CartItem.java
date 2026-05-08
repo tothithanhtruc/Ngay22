@@ -3,7 +3,7 @@ package com.example.hitcapp;
 public class CartItem {
     private String name;
     private String price;
-    private String imageUrl; // Đổi từ int imageId sang String imageUrl
+    private String imageUrl;
     private int quantity;
     private boolean isSelected;
 

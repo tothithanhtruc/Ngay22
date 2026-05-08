@@ -16,7 +16,6 @@ object RetrofitClient {
 
     private fun getUnsafeOkHttpClient(): OkHttpClient {
         try {
-            // Tạo một trust manager không kiểm tra chứng chỉ bảo mật
             val trustAllCerts = arrayOf<TrustManager>(object : X509TrustManager {
                 override fun checkClientTrusted(chain: Array<out X509Certificate>?, authType: String?) {}
                 override fun checkServerTrusted(chain: Array<out X509Certificate>?, authType: String?) {}
